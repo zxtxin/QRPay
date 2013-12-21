@@ -1,0 +1,104 @@
+
+
+#include "mainservice.h"
+#ifdef _LANG_ZHCN
+#include "static_res_cn.h"
+#elif defined _LANG_ZHTW
+#include "static_res_tw.h"
+#else
+#include "static_res_en.h"
+#endif
+static HWND hwnd_pic,hwnd_txt;
+BITMAP pic;
+
+static int QRPayWinProc(HWND hWnd, int message, WPARAM wParam, LPARAM lParam)
+{
+    HDC hdc;
+    switch (message) {
+        case MSG_CREATE:
+            hwnd_pic = CreateWindow (CTRL_STATIC,"",WS_CHILD | SS_BITMAP | WS_VISIBLE | WS_BORDER,IDC_STATIC, 160, 40, 160, 160, hWnd, 0);
+	    hwnd_txt = CreateWindow (CTRL_STATIC,"Welcome to QRPay!",WS_CHILD | SS_NOTIFY | SS_CENTER | WS_VISIBLE,IDC_STATIC+1,0, 40, 160, 160, hWnd, 0);
+
+            break;
+
+        case MSG_DESTROY:
+            DestroyAllControls (hWnd);
+            break;
+
+        case MSG_CLOSE:
+            DestroyMainWindow (hWnd);
+            PostQuitMessage (hWnd);
+            break;
+	
+	default:
+	    return DefaultMainWinProc(hWnd, message, wParam, lParam);
+    }
+	return 0;
+    
+}
+/*
+void *MainService(void)
+{
+	int i,j;
+	scanf("%d",&i);
+	if(i==10){
+	printf("i==10,true\n");
+	LoadBitmap (HDC_SCREEN, &pic, "9.gif");
+	SendMessage(hwnd_pic,STM_SETIMAGE,(WPARAM)&pic,(LPARAM)0);
+	SetWindowText (hwnd_txt, "Total:\n");
+	}
+	else printf("WRONG");
+	
+}
+*/
+int MiniGUIMain (int argc, const char* argv[])
+{
+    MSG Msg;
+    HWND hMainWnd;
+    MAINWINCREATE CreateInfo;
+   
+    pthread_t new_thread;
+    int ret;
+    ret=CreateThreadForMainWindow(&new_thread, NULL, MainService, 0);
+  
+
+#ifdef _MGRM_PROCESSES
+    JoinLayer(NAME_DEF_LAYER , "static" , 0 , 0);
+#endif
+
+    CreateInfo.dwStyle = WS_VISIBLE ;
+    CreateInfo.dwExStyle = WS_EX_NONE;
+    CreateInfo.spCaption = CAPTION;
+    CreateInfo.hMenu = 0;
+    CreateInfo.hCursor = GetSystemCursor(0);
+    CreateInfo.hIcon = 0;
+    CreateInfo.MainWindowProc = QRPayWinProc;
+    CreateInfo.lx = 0;
+    CreateInfo.ty = 0;
+    CreateInfo.rx = 320;
+    CreateInfo.by = 240;
+    CreateInfo.iBkColor = COLOR_lightwhite;
+    CreateInfo.dwAddData = 0;
+    CreateInfo.hHosting = HWND_DESKTOP;
+    
+    hMainWnd = CreateMainWindow (&CreateInfo);
+    
+    if (hMainWnd == HWND_INVALID)
+        return -1;
+
+    ShowWindow(hMainWnd, SW_SHOWNORMAL);
+
+    while (GetMessage(&Msg, hMainWnd)) {
+        TranslateMessage(&Msg);
+        DispatchMessage(&Msg);
+    }
+
+    MainWindowThreadCleanup (hMainWnd);
+
+    return 0;
+}
+
+#ifdef _MGRM_THREADS
+#include <minigui/dti.c>
+#endif
+
