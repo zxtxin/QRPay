@@ -1,3 +1,14 @@
+#include <minigui/common.h>
+#include <minigui/minigui.h>
+#include <minigui/gdi.h>
+#include <minigui/window.h>
+#include <minigui/control.h>
+
+#include <stdio.h>
+#include <signal.h>
+#include <ctype.h>
+#include "MyCom.h"
+#include "inet.h"
 #include "mainservice.h"
 
 

@@ -1,3 +1,13 @@
+#include <stdio.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <fcntl.h>
+#include <sys/time.h>
+#include <unistd.h>
+#include <sys/time.h>
 #include "inet.h"
 int init_cli(void)
 {
