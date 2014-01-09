@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <signal.h>
 #include <ctype.h>
+#include <string.h>
+
 #include "MyCom.h"
 #include "inet.h"
 #include "mainservice.h"
@@ -24,7 +26,8 @@ void * MainService(void)
 	int fdcom;
 	int status_com,status_sock;
 	char buf[MAX_LINE]={};
-	char strOnDisplay[100]={};
+	char *strOnDisplay;
+
 	pid_t pid;
 	fd_set sockset;
 	if(!(sockfd=init_cli())) {
@@ -45,7 +48,7 @@ void * MainService(void)
  		 0    	                  	// reserved
 	};
 
-	fdcom = PortOpen(&portinfo);
+/*	fdcom = PortOpen(&portinfo);
 	
 	if(fdcom<0){
 		printf("Error: open serial port error.\n");
@@ -53,21 +56,30 @@ void * MainService(void)
 	}
 
 	PortSet(fdcom, &portinfo);
+*/
+	fdcom=0;
 	add_set(&sockset,sockfd,fdcom);
 
 	LoadBitmap (HDC_SCREEN, &pic, "default.png");
+	SendMessage(hwnd_pic,STM_SETIMAGE,(WPARAM)&pic,(LPARAM)0);
 	while(1)
 	{
 		select( (sockfd >fdcom) ? (sockfd+1) : (fdcom+1),&sockset,NULL,NULL,NULL);
 		if(FD_ISSET(fdcom,&sockset)){
 			status_com=read(fdcom,buf,MAX_LINE);
-			UnloadBitmap (&pic);
+
 			pid=vfork();
-			if(!pid) execl("/qrencode","qrencode","-s 5","-m 2","-o qr_pic.png",buf,NULL);
-			else wait(NULL);
-			LoadBitmap (HDC_SCREEN, &pic, "qr_pic.png");
+			if(!pid)
+				execlp("qrencode","qrencode","-s 5","-m 2","-oqrcode.png",buf,NULL);
+			else
+				wait(NULL);
+
+			LoadBitmap (HDC_SCREEN, &pic, "qrcode.png");
 			SendMessage(hwnd_pic,STM_SETIMAGE,(WPARAM)&pic,(LPARAM)0);
-			SetWindowText (hwnd_txt, strOnDisplay);
+
+			/*
+			SetWindowText (hwnd_txt, *buf);
+*/
 			write(sockfd,buf,MAX_LINE);
 
 		}
@@ -76,8 +88,8 @@ void * MainService(void)
 			write(fdcom,buf,MAX_LINE);
 			LoadBitmap (HDC_SCREEN, &pic, "default.png");
 			SendMessage(hwnd_pic,STM_SETIMAGE,(WPARAM)&pic,(LPARAM)0);
-			
-			SetWindowText (hwnd_txt, strOnDisplay);
+			strOnDisplay=buf;
+			SetWindowText (hwnd_txt, *strOnDisplay);
 		}
 	}
 	close(fdcom);

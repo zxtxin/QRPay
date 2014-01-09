@@ -10,7 +10,7 @@
 #include "MyCom.h"
 #include "inet.h"
 #include "mainservice.h"
-
+/*
 #ifdef _LANG_ZHCN
 #include "static_res_cn.h"
 #elif defined _LANG_ZHTW
@@ -18,7 +18,8 @@
 #else
 #include "static_res_en.h"
 #endif
-static HWND hwnd_pic,hwnd_txt;
+*/
+HWND hwnd_pic,hwnd_txt;
 BITMAP pic;
 
 static int QRPayWinProc(HWND hWnd, int message, WPARAM wParam, LPARAM lParam)
@@ -26,8 +27,8 @@ static int QRPayWinProc(HWND hWnd, int message, WPARAM wParam, LPARAM lParam)
     HDC hdc;
     switch (message) {
         case MSG_CREATE:
-            hwnd_pic = CreateWindow (CTRL_STATIC,"",WS_CHILD | SS_BITMAP | WS_VISIBLE | WS_BORDER,IDC_STATIC, 160, 40, 160, 160, hWnd, 0);
-	    hwnd_txt = CreateWindow (CTRL_STATIC,"Welcome to QRPay!",WS_CHILD | SS_NOTIFY | SS_CENTER | WS_VISIBLE,IDC_STATIC+1,0, 40, 160, 160, hWnd, 0);
+            hwnd_pic = CreateWindow (CTRL_STATIC,"",WS_CHILD | SS_BITMAP | WS_VISIBLE | WS_BORDER,IDC_STATIC, 240, 16, 240, 240, hWnd, 0);
+	    hwnd_txt = CreateWindow (CTRL_STATIC,"Welcome to QRPay!",WS_CHILD | SS_NOTIFY | SS_CENTER | WS_VISIBLE,IDC_STATIC+1,0, 16, 240, 240, hWnd, 0);
 
             break;
 
@@ -78,15 +79,15 @@ int MiniGUIMain (int argc, const char* argv[])
 
     CreateInfo.dwStyle = WS_VISIBLE ;
     CreateInfo.dwExStyle = WS_EX_NONE;
-    CreateInfo.spCaption = CAPTION;
+    CreateInfo.spCaption = "Welcome to QRPay!";
     CreateInfo.hMenu = 0;
     CreateInfo.hCursor = GetSystemCursor(0);
     CreateInfo.hIcon = 0;
     CreateInfo.MainWindowProc = QRPayWinProc;
     CreateInfo.lx = 0;
     CreateInfo.ty = 0;
-    CreateInfo.rx = 320;
-    CreateInfo.by = 240;
+    CreateInfo.rx = 480;
+    CreateInfo.by = 272;
     CreateInfo.iBkColor = COLOR_lightwhite;
     CreateInfo.dwAddData = 0;
     CreateInfo.hHosting = HWND_DESKTOP;

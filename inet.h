@@ -8,7 +8,7 @@
 #ifndef INET_H_
 #define INET_H_
 
-#define MAX_LINE 1<<10
+#define MAX_LINE 20
 extern int init_cli(void);
 
 
