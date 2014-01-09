@@ -26,7 +26,6 @@ void * MainService(void)
 	int fdcom;
 	int status_com,status_sock;
 	char buf[MAX_LINE]={};
-	char *strOnDisplay;
 
 	pid_t pid;
 	fd_set sockset;
@@ -58,12 +57,13 @@ void * MainService(void)
 	PortSet(fdcom, &portinfo);
 */
 	fdcom=0;
-	add_set(&sockset,sockfd,fdcom);
+
 
 	LoadBitmap (HDC_SCREEN, &pic, "default.png");
 	SendMessage(hwnd_pic,STM_SETIMAGE,(WPARAM)&pic,(LPARAM)0);
 	while(1)
 	{
+		add_set(&sockset,sockfd,fdcom);
 		select( (sockfd >fdcom) ? (sockfd+1) : (fdcom+1),&sockset,NULL,NULL,NULL);
 		if(FD_ISSET(fdcom,&sockset)){
 			status_com=read(fdcom,buf,MAX_LINE);
@@ -77,20 +77,24 @@ void * MainService(void)
 			LoadBitmap (HDC_SCREEN, &pic, "qrcode.png");
 			SendMessage(hwnd_pic,STM_SETIMAGE,(WPARAM)&pic,(LPARAM)0);
 
-			/*
-			SetWindowText (hwnd_txt, *buf);
-*/
+
+			SetWindowText (hwnd_txt, buf);
+
 			write(sockfd,buf,MAX_LINE);
 
 		}
 		if(FD_ISSET(sockfd,&sockset)){
 			status_sock=read(sockfd,buf,MAX_LINE);
+			buf[status_sock]=0;
 			write(fdcom,buf,MAX_LINE);
+			printf("\n");
 			LoadBitmap (HDC_SCREEN, &pic, "default.png");
 			SendMessage(hwnd_pic,STM_SETIMAGE,(WPARAM)&pic,(LPARAM)0);
-			strOnDisplay=buf;
-			SetWindowText (hwnd_txt, *strOnDisplay);
+
+			SetWindowText (hwnd_txt, buf);
+
 		}
+
 	}
 	close(fdcom);
 	close(sockfd);
