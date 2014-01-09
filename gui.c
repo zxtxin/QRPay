@@ -27,8 +27,8 @@ static int QRPayWinProc(HWND hWnd, int message, WPARAM wParam, LPARAM lParam)
     HDC hdc;
     switch (message) {
         case MSG_CREATE:
-            hwnd_pic = CreateWindow (CTRL_STATIC,"",WS_CHILD | SS_BITMAP | WS_VISIBLE | WS_BORDER,IDC_STATIC, 240, 16, 240, 240, hWnd, 0);
-	    hwnd_txt = CreateWindow (CTRL_STATIC,"Welcome to QRPay!",WS_CHILD | SS_NOTIFY | SS_CENTER | WS_VISIBLE,IDC_STATIC+1,0, 16, 240, 240, hWnd, 0);
+            hwnd_pic = CreateWindow (CTRL_STATIC,"",WS_CHILD | SS_BITMAP | WS_VISIBLE ,IDC_STATIC, 240, 16, 240, 240, hWnd, 0);
+            hwnd_txt = CreateWindow (CTRL_STATIC,"Welcome to QRPay!",WS_CHILD | SS_NOTIFY | SS_CENTER | SS_WHITERECT | WS_VISIBLE,IDC_STATIC+1,0, 16, 240, 240, hWnd, 0);
 
             break;
 
@@ -72,11 +72,11 @@ int MiniGUIMain (int argc, const char* argv[])
     int ret;
     ret=CreateThreadForMainWindow(&new_thread, NULL, MainService, 0);
   
-
+/*
 #ifdef _MGRM_PROCESSES
     JoinLayer(NAME_DEF_LAYER , "static" , 0 , 0);
 #endif
-
+*/
     CreateInfo.dwStyle = WS_VISIBLE ;
     CreateInfo.dwExStyle = WS_EX_NONE;
     CreateInfo.spCaption = "Welcome to QRPay!";
