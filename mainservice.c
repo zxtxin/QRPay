@@ -63,6 +63,7 @@ void * MainService(void)
 	SendMessage(hwnd_pic,STM_SETIMAGE,(WPARAM)&pic,(LPARAM)0);
 	while(1)
 	{
+		bzero(buf,MAX_LINE);
 		add_set(&sockset,sockfd,fdcom);
 		select( (sockfd >fdcom) ? (sockfd+1) : (fdcom+1),&sockset,NULL,NULL,NULL);
 		if(FD_ISSET(fdcom,&sockset)){
@@ -70,7 +71,7 @@ void * MainService(void)
 
 			pid=vfork();
 			if(!pid)
-				execlp("qrencode","qrencode","-s 5","-m 2","-oqrcode.png",buf,NULL);
+				execlp("qrencode","qrencode","-s 6","-m 2","-lH","-oqrcode.png",buf,NULL);
 			else
 				wait(NULL);
 
