@@ -8,8 +8,8 @@
 #include <signal.h>
 #include <ctype.h>
 #include "MyCom.h"
-#include "inet.h"
-#include "mainservice.h"
+//#include "inet.h"
+//#include "mainservice.h"
 /*
 #ifdef _LANG_ZHCN
 #include "static_res_cn.h"
@@ -19,6 +19,7 @@
 #include "static_res_en.h"
 #endif
 */
+extern void * MainService(void);
 HWND hwnd_pic,hwnd_txt;
 BITMAP pic;
 

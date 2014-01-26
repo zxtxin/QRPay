@@ -8,11 +8,12 @@
 #include <signal.h>
 #include <ctype.h>
 #include <string.h>
-
+#include "ghttp/ghttp.h"
 #include "MyCom.h"
-#include "inet.h"
-#include "mainservice.h"
+#define MAX_LINE 1024
 
+extern HWND hwnd_pic,hwnd_txt;
+extern BITMAP pic;
 
 void add_set(fd_set * sockset,int fd1,int fd2){
 	FD_ZERO(sockset);
@@ -22,17 +23,19 @@ void add_set(fd_set * sockset,int fd1,int fd2){
 
 void * MainService(void)
 {
-	int sockfd;
-	int fdcom;
-	int status_com,status_sock;
-	char buf[MAX_LINE]={};
-
+	
+	int fdcom,sockfd;
+	int status_com;
+	char *buf=(char *)malloc(MAX_LINE);
+	int size_readfdcom;
 	pid_t pid;
 	fd_set sockset;
-	if(!(sockfd=init_cli())) {
-		printf("Error: socket initialization error.\n");
-		exit(1);
-	}
+	char *uri;
+	ghttp_request *request = ghttp_request_new();
+	ghttp_status http_status;
+
+	ghttp_set_uri(request, uri);
+	ghttp_prepare(request);
 
 	portinfo_t portinfo ={
 		'0',                          	// print prompt after receiving
@@ -47,53 +50,68 @@ void * MainService(void)
  		 0    	                  	// reserved
 	};
 
-/*	fdcom = PortOpen(&portinfo);
+	fdcom = PortOpen(&portinfo);
 	
 	if(fdcom<0){
-		printf("Error: open serial port error.\n");
+		perror("Error: open serial port error.\n");
 		exit(1);
 	}
 
 	PortSet(fdcom, &portinfo);
-*/
-	fdcom=0;
+
+	
 
 
-	LoadBitmap (HDC_SCREEN, &pic, "default.png");
-	SendMessage(hwnd_pic,STM_SETIMAGE,(WPARAM)&pic,(LPARAM)0);
+	
 	while(1)
 	{
-		bzero(buf,MAX_LINE);
+		LoadBitmap (HDC_SCREEN, &pic, "default.png");
+		SendMessage(hwnd_pic,STM_SETIMAGE,(WPARAM)&pic,(LPARAM)0);
+
+		size_readfdcom=read(fdcom,buf,MAX_LINE);
+		SetWindowText (hwnd_txt, "Dealing...");
+		
+		ghttp_set_sync(request, ghttp_sync);
+		ghttp_set_type(request, ghttp_type_post);
+		ghttp_set_header(request, http_hdr_Connection, "keep-alive");
+		//set body
+		
+		
+		http_status=ghttp_process(request);
+		//get_body
+		//if(body==ok)then
+		pid=vfork();
+		if(!pid)
+			execlp("qrencode","qrencode","-s 6","-m 2","-lH","-oqrcode.png",buf,NULL);
+		else
+			wait(NULL);
+		LoadBitmap (HDC_SCREEN, &pic, "qrcode.png");
+		SendMessage(hwnd_pic,STM_SETIMAGE,(WPARAM)&pic,(LPARAM)0);
+		SetWindowText (hwnd_txt, "Amount of money:\n");
+		
+		ghttp_clean(request);
+		ghttp_set_sync(request, ghttp_async);
+		ghttp_set_type(request, ghttp_type_post);
+		ghttp_set_header(request, http_hdr_Connection, "keep-alive");
+		//set body
+		
+		
+		http_status=ghttp_process(request);
+		sockfd=ghttp_get_socket(request);
+
 		add_set(&sockset,sockfd,fdcom);
 		select( (sockfd >fdcom) ? (sockfd+1) : (fdcom+1),&sockset,NULL,NULL,NULL);
 		if(FD_ISSET(fdcom,&sockset)){
-			status_com=read(fdcom,buf,MAX_LINE);
-
-			pid=vfork();
-			if(!pid)
-				execlp("qrencode","qrencode","-s 6","-m 2","-lH","-oqrcode.png",buf,NULL);
-			else
-				wait(NULL);
-
-			LoadBitmap (HDC_SCREEN, &pic, "qrcode.png");
-			SendMessage(hwnd_pic,STM_SETIMAGE,(WPARAM)&pic,(LPARAM)0);
-
-
-			SetWindowText (hwnd_txt, buf);
-
-			write(sockfd,buf,MAX_LINE);
-
+			ghttp_clean(request);
+			continue;
 		}
 		if(FD_ISSET(sockfd,&sockset)){
-			status_sock=read(sockfd,buf,MAX_LINE);
-			buf[status_sock]=0;
+			http_status=ghttp_process(request);
+			//get_body
+			//if(payment succeed)then
 			write(fdcom,buf,MAX_LINE);
-			printf("\n");
-			LoadBitmap (HDC_SCREEN, &pic, "default.png");
-			SendMessage(hwnd_pic,STM_SETIMAGE,(WPARAM)&pic,(LPARAM)0);
-
-			SetWindowText (hwnd_txt, buf);
-
+			SetWindowText (hwnd_txt, "Payment Succeed.");
+			ghttp_clean(request);
 		}
 
 	}
@@ -101,3 +119,4 @@ void * MainService(void)
 	close(sockfd);
 	return 0;
 }
+
