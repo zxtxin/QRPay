@@ -29,7 +29,7 @@ static int QRPayWinProc(HWND hWnd, int message, WPARAM wParam, LPARAM lParam)
     switch (message) {
         case MSG_CREATE:
             hwnd_pic = CreateWindow (CTRL_STATIC,"",WS_CHILD | SS_BITMAP | WS_VISIBLE ,IDC_STATIC, 240, 16, 240, 240, hWnd, 0);
-            hwnd_txt = CreateWindow (CTRL_STATIC,"Welcome \nto QRPay!",WS_CHILD | SS_NOTIFY | SS_CENTER | SS_WHITERECT | WS_VISIBLE,IDC_STATIC+1,0, 85, 240, 240, hWnd, 0);
+            hwnd_txt = CreateWindow (CTRL_STATIC,"",WS_CHILD | SS_NOTIFY | SS_CENTER | SS_WHITERECT | WS_VISIBLE,IDC_STATIC+1,0, 85, 240, 240, hWnd, 0);
 	        SetWindowFont(hwnd_txt,CreateLogFont (NULL, "Arial", "ISO8859-1",FONT_WEIGHT_REGULAR, FONT_SLANT_ROMAN, FONT_FLIP_NIL,FONT_OTHER_AUTOSCALE, FONT_UNDERLINE_NONE, FONT_STRUCKOUT_NONE,25, 0));
             break;
 
