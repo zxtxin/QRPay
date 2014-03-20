@@ -7,19 +7,9 @@
 #include <stdio.h>
 #include <signal.h>
 #include <ctype.h>
-#include "MyCom.h"
-//#include "inet.h"
-//#include "mainservice.h"
-/*
-#ifdef _LANG_ZHCN
-#include "static_res_cn.h"
-#elif defined _LANG_ZHTW
-#include "static_res_tw.h"
-#else
-#include "static_res_en.h"
-#endif
-*/
-extern void * MainService(void);
+//#include "MyCom.h"
+
+extern void * MainService(void *);
 HWND hwnd_pic,hwnd_txt;
 BITMAP pic;
 
@@ -48,21 +38,7 @@ static int QRPayWinProc(HWND hWnd, int message, WPARAM wParam, LPARAM lParam)
 	return 0;
     
 }
-/*
-void *MainService(void)
-{
-	int i,j;
-	scanf("%d",&i);
-	if(i==10){
-	printf("i==10,true\n");
-	LoadBitmap (HDC_SCREEN, &pic, "9.gif");
-	SendMessage(hwnd_pic,STM_SETIMAGE,(WPARAM)&pic,(LPARAM)0);
-	SetWindowText (hwnd_txt, "Total:\n");
-	}
-	else printf("WRONG");
-	
-}
-*/
+
 int MiniGUIMain (int argc, const char* argv[])
 {
     MSG Msg;
@@ -73,11 +49,7 @@ int MiniGUIMain (int argc, const char* argv[])
     int ret;
     ret=CreateThreadForMainWindow(&new_thread, NULL, MainService, 0);
   
-/*
-#ifdef _MGRM_PROCESSES
-    JoinLayer(NAME_DEF_LAYER , "static" , 0 , 0);
-#endif
-*/
+
     CreateInfo.dwStyle = WS_VISIBLE ;
     CreateInfo.dwExStyle = WS_EX_NONE;
     CreateInfo.spCaption = "Welcome to QRPay!";
